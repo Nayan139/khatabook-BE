@@ -73,7 +73,7 @@ exports.signup = async(req,res) => {
     }
 }
 
-exports.login = async (req, res, next) => {
+exports.signin = async (req, res, next) => {
     try {
         const {errors,isValid}=loginValidator(req.body)
         const { email, password } = req.body    
@@ -108,4 +108,38 @@ exports.login = async (req, res, next) => {
         return next(errors);
     }
         
+}
+
+exports.forgotPassword = async (req, res, next) => {
+    try {
+        const {errors,isValid}=loginValidator(req.body)
+        const { email, password } = req.body    
+        if (!isValid) {
+            return res.status(400).json({ status: false, message: { errors } });
+        }
+        
+        const isExisiting = await User.findOne({ email })
+        if (!isExisiting) {
+            const error = new HttpError('Forgot Password Failed, Please check your email address.', 422);
+            next(error)
+         }
+        
+        const isValidatePassword = await bcrypt.compare(password, isExisiting.password)
+        if (isValidatePassword) {
+            const error = new HttpError('New Password should be different from previous password.', 422);
+            return next(error);
+        }
+        let hashedPassword;
+        try {
+          hashedPassword = await bcrypt.hash(password, 12);
+        } catch (err) {
+          return res.status(500).json({ status: false, message: "Could not update password, please try again." });
+        }
+        const isUpdated = await User.findOneAndUpdate(email, { password: hashedPassword })
+        if (isUpdated) {
+            res.json({ success: true, message:"Password updated" });
+        }
+    } catch (error) {
+        console.log('error',error)
+    }
 }
