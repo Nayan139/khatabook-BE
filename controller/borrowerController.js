@@ -157,7 +157,6 @@ exports.borrowerList = async (req, res) => {
         
         res.status(200).json({status:true,Borrowers:borrowers})
     } catch (error) {
-        console.log('error', error)
         res.status(500).json({ status: false, message: "Borrower List Failed, please try again later." });   
     }
 }
