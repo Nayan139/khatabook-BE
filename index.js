@@ -6,7 +6,8 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 
 //Routes
-const auth=require('./routes/authRoutes')
+const auth = require('./routes/authRoutes')
+const borrower=require('./routes/borrowerRoutes')
 
 const app = express('cors')
 
@@ -14,6 +15,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(auth)
+app.use(borrower)
 
 const PORT= process.env.PORT || 8080
 
