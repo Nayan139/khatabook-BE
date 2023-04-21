@@ -13,50 +13,45 @@ passport.use(
       callbackURL: process.env.GOOGLE_REDIRECT_URI,
       passReqToCallback: true,
     },
-    async function (request, accessToken, refreshToken, profile, done) {
-      // const userInfo = new User({
-      //   firstname: profile.name.familyName ?? "Firstname",
-      //   lastname: profile.name.givenName ?? "Lastname",
-      //   email: profile.emails[0].value,
-      //   password: "Test@456",
-      // });
+   async function (request, accessToken, refreshToken, profile, done) {
+      const userInfo = new User({
+        firstname: profile.name.familyName ?? "Firstname",
+        lastname: profile.name.givenName ?? "Lastname",
+        email: profile.emails[0].value,
+        password: "Test@456",
+      });
 
-      // const isExisiting = await User.findOne({ email: userInfo.email });
-      // let token;
-      // if (!isExisiting) {
-      //   userInfo.save();
-      //   // created token
-      //   token = jwt.sign(
-      //     {
-      //       id: userInfo._id,
-      //       name: `${userInfo.firstname} ${userInfo.lastname}`,
-      //       email: userInfo.email,
-      //     },
-      //     process.env.SECRET,
-      //     {
-      //       expiresIn: process.env.EXPIRE_TOKEN,
-      //     }
-      //   );
-      // } else {
-      //   // created token
-      //   token = jwt.sign(
-      //     {
-      //       id: isExisiting._id,
-      //       name: `${isExisiting.firstname} ${isExisiting.lastname}`,
-      //       email: isExisiting.email,
-      //     },
-      //     process.env.SECRET,
-      //     {
-      //       expiresIn: process.env.EXPIRE_TOKEN,
-      //     }
-      //   );
-      // }
-      // console.log(
-      //   "userInfo======================================================>,isExisiting",
-      //   userInfo,
-      //   token
-      // );
-      return done(null, profile);
+      const isExisiting = await User.findOne({ email: userInfo.email });
+      let token;
+      if (!isExisiting) {
+        userInfo.save();
+        // created token
+        token = jwt.sign(
+          {
+            id: userInfo._id,
+            name: `${userInfo.firstname} ${userInfo.lastname}`,
+            email: userInfo.email,
+          },
+          process.env.SECRET,
+          {
+            expiresIn: process.env.EXPIRE_TOKEN,
+          }
+        );
+      } else {
+        // created token
+        token = jwt.sign(
+          {
+            id: isExisiting._id,
+            name: `${isExisiting.firstname} ${isExisiting.lastname}`,
+            email: isExisiting.email,
+          },
+          process.env.SECRET,
+          {
+            expiresIn: process.env.EXPIRE_TOKEN,
+          }
+        );
+      }
+      return done(null, token);
     }
   )
 );
