@@ -51,7 +51,7 @@ passport.use(
           }
         );
       }
-      return done(null, token);
+      return done(null, `Bearer ${token}`);
     }
   )
 );
