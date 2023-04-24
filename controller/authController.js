@@ -157,11 +157,12 @@ exports.forgotPassword = async (req, res, next) => {
 
     const isExisiting = await User.findOne({ email });
     if (!isExisiting) {
-      const error = new HttpError(
-        "Forgot Password Failed, Please check your email address.",
-        422
-      );
-      next(error);
+      // const error = new HttpError(
+      //   "Forgot Password Failed, Please check your email address.",
+      //   422
+      // );
+      // next(error);
+      return  res.status(500).json({ success: false, message: "Forgot Password Failed, Please check your email address." });;
     }
 
     const isValidatePassword = await bcrypt.compare(
@@ -169,11 +170,11 @@ exports.forgotPassword = async (req, res, next) => {
       isExisiting.password
     );
     if (isValidatePassword) {
-      const error = new HttpError(
-        "New Password should be different from previous password.",
-        422
-      );
-      return next(error);
+      // const error = new HttpError(
+      //   "New Password should be different from previous password.",
+      //   422
+      // );
+      return  res.status(500).json({ success: false, message: "New Password should be different from previous password." });
     }
     let hashedPassword;
     try {

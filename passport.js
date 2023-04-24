@@ -13,12 +13,13 @@ passport.use(
       callbackURL: process.env.GOOGLE_REDIRECT_URI,
       passReqToCallback: true,
     },
-   async function (request, accessToken, refreshToken, profile, done) {
+    async function (request, accessToken, refreshToken, profile, done) {
+      let hashedPassword = await bcrypt.hash("Test@123", 12);
       const userInfo = new User({
         firstname: profile.name.familyName ?? "Firstname",
         lastname: profile.name.givenName ?? "Lastname",
         email: profile.emails[0].value,
-        password: "Test@456",
+        password: hashedPassword,
       });
 
       const isExisiting = await User.findOne({ email: userInfo.email });
