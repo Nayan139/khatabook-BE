@@ -2,12 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const borrowerSchema = new Schema({
-    borrowerName: {
+    debtorName: {
         type: String,
         trim: true,
         required:true
     },
-    moneyLenderName: {
+    creditorName: {
         type: String,
         trim: true,
         required:true
@@ -58,7 +58,11 @@ const borrowerSchema = new Schema({
     isPaid: {
         type: Boolean,
         default:false
+    },
+    type: {
+        type:String
     }
+
 },{
     timestamps:true
 })

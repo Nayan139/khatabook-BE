@@ -6,8 +6,8 @@ module.exports = function borroweValidator(data) {
     let errors = {}
     const mobileRegex= /^[6-9]\d{9}$/gi;
 
-    data.borrowerName = !isEmpty(data.borrowerName) ? validator.trim(data.borrowerName) : ''
-    data.moneyLenderName = !isEmpty(data.moneyLenderName) ? validator.trim(data.moneyLenderName) : ''
+    data.debtorName = !isEmpty(data.debtorName) ? validator.trim(data.debtorName) : ''
+    data.creditorName = !isEmpty(data.creditorName) ? validator.trim(data.creditorName) : ''
     data.paymentMode = !isEmpty(data.paymentMode) ? validator.trim(data.paymentMode):''
     data.paybackDate = !isEmpty(data.paybackDate) ? validator.trim(data.paybackDate) : ''
     data.payDate=!isEmpty(data.payDate) ? validator.trim(data.payDate) : ''
@@ -16,12 +16,12 @@ module.exports = function borroweValidator(data) {
     data.interestRate = !isEmpty(data.interestRate) ? validator.trim(data.interestRate) : ''
     
 
-    if (validator.isEmpty(data.borrowerName)) {
-        errors.borrowerName="Borrower name is required"
+    if (validator.isEmpty(data.debtorName)) {
+        errors.debtorName="Borrower name is required"
     }
 
-    if (validator.isEmpty(data.moneyLenderName)) {
-        errors.moneyLenderName="Money lender name is required"
+    if (validator.isEmpty(data.creditorName)) {
+        errors.creditorName="Money lender name is required"
     }
 
     if (validator.isEmpty(data.paymentMode)) {
