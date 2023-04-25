@@ -12,7 +12,7 @@ module.exports = function borroweValidator(data) {
     data.paybackDate = !isEmpty(data.paybackDate) ? validator.trim(data.paybackDate) : ''
     data.payDate=!isEmpty(data.payDate) ? validator.trim(data.payDate) : ''
     data.principalAmount = !isEmpty(data.principalAmount) ? validator.trim(data.principalAmount) : ''
-    data.borrowerNumber = !isEmpty(data.borrowerNumber) ? validator.trim(data.borrowerNumber) : ''
+    data.debtorNumber = !isEmpty(data.debtorNumber) ? validator.trim(data.debtorNumber) : ''
     data.interestRate = !isEmpty(data.interestRate) ? validator.trim(data.interestRate) : ''
     
 
@@ -44,10 +44,10 @@ module.exports = function borroweValidator(data) {
         errors.principalAmount="Principal amount is required"
     }
 
-    if (validator.isEmpty(data.borrowerNumber)) {
-        errors.borrowerNumber="Borrower number is required"
-    } else if (!mobileRegex.test(data.borrowerNumber)) {
-        errors.borrowerNumber = "Mobile number is not valid";
+    if (validator.isEmpty(data.debtorNumber)) {
+        errors.debtorNumber="Borrower number is required"
+    } else if (!mobileRegex.test(data.debtorNumber)) {
+        errors.debtorNumber = "Mobile number is not valid";
     }
 
     if (data.isInterest) {

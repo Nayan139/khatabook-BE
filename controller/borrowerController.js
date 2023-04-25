@@ -7,7 +7,7 @@ exports.createBorrwerEntry =async (req,res) => {
         const { errors, isValid } = borrowerValidator(req.body)
         if (!isValid) return res.status(400).json({ "status": false, message: { errors } })
 
-        const { debtorName, creditorName, paymentMode, paymentApplication,type, paybackDate, payDate,interestRate, principalAmount, isInterest, isWhatsapp, borrowerNumber } = req.body
+        const { debtorName, creditorName, paymentMode, paymentApplication,type, paybackDate, payDate,interestRate, principalAmount, isInterest, isWhatsapp, debtorNumber } = req.body
         
         let interestAmount = 0
         if (isInterest) {
@@ -21,7 +21,7 @@ exports.createBorrwerEntry =async (req,res) => {
             paybackDate,
             payDate,
             isWhatsapp,
-            borrowerNumber, 
+            debtorNumber, 
             interestAmount,
             principalAmount,
             isInterest,
@@ -48,7 +48,7 @@ exports.updateBorrowerEntry = async (req, res) => {
         const exisitingBorrower = await Borrower.findById(_id)
         if(!exisitingBorrower) return res.status(400).json({ "status": false, message: "Please Enter Valid Debtor id." })
 
-        const { debtorName, creditorName,type, paymentMode, paymentApplication, paybackDate, payDate,interestRate, principalAmount, isInterest, isWhatsapp, borrowerNumber } = req.body
+        const { debtorName, creditorName,type, paymentMode, paymentApplication, paybackDate, payDate,interestRate, principalAmount, isInterest, isWhatsapp, debtorNumber } = req.body
         
         let interestAmount = 0
         if (isInterest) {
@@ -62,7 +62,7 @@ exports.updateBorrowerEntry = async (req, res) => {
             paybackDate,
             payDate,
             isWhatsapp,
-            borrowerNumber, 
+            debtorNumber, 
             interestAmount,
             principalAmount,
             isInterest,
