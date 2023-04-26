@@ -35,7 +35,7 @@ router.get(
 
 router.get("/login/success",isLoggedIn, (req, res) => {
   if (req.user) {
-    res.redirect(`${redirectURL}?token=${JSON.stringify(req.user)}`);
+    res.redirect(`${redirectURL}?token=${req.user}`);
   } else {
     res.redirect(redirectURL);
   }
