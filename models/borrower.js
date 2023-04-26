@@ -28,7 +28,7 @@ const borrowerSchema = new Schema({
         default: Date.now 
     },
     principalAmount: {
-        type: String,
+        type: Number,
         required:true
     },
     isInterest: {
@@ -36,7 +36,7 @@ const borrowerSchema = new Schema({
         default: false
     },
     interestRate: {
-        type: String,
+        type: Number,
         default:null
     },
     interestAmount: {
@@ -52,7 +52,7 @@ const borrowerSchema = new Schema({
         default:false
     },
     debtorNumber: {
-        type: String,
+        type: Number,
         required:true
     },
     isPaid: {
