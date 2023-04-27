@@ -31,7 +31,7 @@ exports.createBorrwerEntry =async (req,res) => {
         })
          
         await borrowerData.save()
-        res.status(201).json({status:true,Debtor:borrowerData})
+        res.status(201).json({status:true,message:"Successfully Created New Entry."})
     } catch (error) {
         console.log('error', error)
         res.status(500).json({ status: false, message: "Create Debtor Entry Failed, please try again later." });   
@@ -112,7 +112,7 @@ exports.IdByBorrowerEntry = async (req, res) => {
 //borrower list
 exports.borrowerList = async (req, res) => {
     try {
-        let { pageNum, pageSize, sortOrder ,sortBy, searchByDebtorName  } = req.query;
+        let { pageNum, pageSize, sortOrder ,sortBy, searchByDebtorName,type  } = req.query;
         if (!pageNum) pageNum = 0;
         if (!pageSize) pageSize = 10;
         if (!sortOrder) sortOrder = {}
@@ -153,11 +153,12 @@ exports.borrowerList = async (req, res) => {
         let sortObject = {};
         sortObject[sort_by] = sort_order;
 
-        let searchobject=searchByDebtorName?{"debtorName":searchByDebtorName}:{}
+        let searchobject ={"type":type}
+          searchobject=  searchByDebtorName ? { "debtorName": searchByDebtorName, "type": type } : searchobject
 
         const borrowers = await Borrower.find(searchobject).sort(sortObject).skip((+pageNum) * (+pageSize)).limit(+pageSize)
-        
-        res.status(200).json({status:true,Debtor:borrowers})
+          const count = await Borrower.countDocuments(searchobject);
+        res.status(200).json({status:true,Debtor:borrowers,total:count})
     } catch (error) {
         res.status(500).json({ status: false, message: "Debtor List Failed, please try again later." });   
     }
