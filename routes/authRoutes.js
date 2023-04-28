@@ -9,6 +9,7 @@ const router = express.Router();
 
 const api = process.env.API;
 const redirectURL = process.env.REDIRECT_URL
+const backendURL=process.env.BACKEND_URL
 
 // ========================================Middleware for google login===============================================================
 const isLoggedIn=(req, res, next)=> {
@@ -16,7 +17,7 @@ const isLoggedIn=(req, res, next)=> {
 }
 // ========================================Google Login===============================================================
 router.get(
- `${api}/google`,
+ `${backendURL}${api}/google`,
   passport.authenticate("google", { scope: ["email", "profile"] })
 );
 
