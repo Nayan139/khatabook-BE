@@ -51,7 +51,7 @@ const borrowerSchema = new Schema({
         type: Boolean,
         default:false
     },
-    debtorNumber: {
+    contactNumber: {
         type: Number,
         required:true
     },
