@@ -17,7 +17,7 @@ const isLoggedIn=(req, res, next)=> {
 }
 // ========================================Google Login===============================================================
 router.get(
- `${backendURL}${api}/google`,
+ `${api}/google`,
   passport.authenticate("google", { scope: ["email", "profile"] })
 );
 
