@@ -5,6 +5,7 @@ const borrowerValidator = require("../validator/borrowerValidator");
 exports.createBorrwerEntry = async (req, res) => {
   try {
     const { errors, isValid } = borrowerValidator(req.body);
+    console.log('req.user----------------------->',req.user)
     if (!isValid)
       return res.status(400).json({ status: false, message: { errors } });
 
