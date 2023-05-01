@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const borrowerSchema = new Schema({
+    userId: { type: String, trim: true },
     debtorName: {
         type: String,
         trim: true,

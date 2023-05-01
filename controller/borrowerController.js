@@ -29,6 +29,7 @@ exports.createBorrwerEntry = async (req, res) => {
       interestAmount = (+principalAmount * +interestRate) / 100;
     }
     const borrowerData = new Borrower({
+      userId:req.user.id,
       debtorName,
       creditorName,
       paymentMode,
@@ -181,14 +182,8 @@ exports.borrowerList = async (req, res) => {
     if (!pageNum) pageNum = 0;
     if (!pageSize) pageSize = 10;
     if (!sortOrder) sortOrder = {};
-    console.log(
-      "pageNum, pageSize, sortObject , search",
-      pageNum,
-      pageSize,
-      sortOrder,
-      searchByDebtorName
-    );
 
+    const userId=req.user.id
     let sort_by;
     let sort_order;
     if (sortBy === "debtorName" && sortOrder === "asc") {
@@ -223,7 +218,7 @@ exports.borrowerList = async (req, res) => {
     let sortObject = {};
     sortObject[sort_by] = sort_order;
 
-    let searchobject = { type: type };
+    let searchobject = { userId:userId,type: type };
     searchobject = searchByDebtorName
       ? { debtorName: {'$regex': `^${searchByDebtorName}$`, $options: 'i'}, type: type }
       : searchobject;
