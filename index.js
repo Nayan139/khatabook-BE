@@ -12,7 +12,8 @@ const bodyParser = require('body-parser')
 
 //Routes
 const auth = require('./routes/authRoutes')
-const borrower=require('./routes/borrowerRoutes')
+const borrower = require('./routes/borrowerRoutes')
+// const message=require('./routes/messageRoutes')
 const app = express('cors')
 
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
@@ -39,6 +40,7 @@ app.use(bodyParser.json())
 
 app.use(auth)
 app.use(borrower)
+// app.use(message)
 
 const PORT= process.env.PORT || 8080
 
