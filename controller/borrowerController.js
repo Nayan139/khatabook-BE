@@ -28,7 +28,7 @@ exports.createBorrwerEntry = async (req, res) => {
       interestAmount = (+principalAmount * +interestRate) / 100;
     }
     const borrowerData = new Borrower({
-      userId:req.user.id,
+      userId: req.user.id,
       debtorName,
       creditorName,
       paymentMode,
@@ -51,12 +51,10 @@ exports.createBorrwerEntry = async (req, res) => {
       .json({ status: true, message: "Successfully Created New Entry." });
   } catch (error) {
     console.log("error", error);
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "Create Entry Failed, please try again later.",
-      });
+    res.status(500).json({
+      status: false,
+      message: "Create Entry Failed, please try again later.",
+    });
   }
 };
 
@@ -117,12 +115,10 @@ exports.updateBorrowerEntry = async (req, res) => {
       .json({ status: true, message: " Successfully Update Entry." });
   } catch (error) {
     console.log("error", error);
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "Update Entry Failed, please try again later.",
-      });
+    res.status(500).json({
+      status: false,
+      message: "Update Entry Failed, please try again later.",
+    });
   }
 };
 
@@ -142,12 +138,10 @@ exports.deleteBorrowerEntry = async (req, res) => {
       .json({ status: true, message: `Successfully delete with ${_id} id.` });
   } catch (error) {
     console.log("error", error);
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "Delete Entry Failed, please try again later.",
-      });
+    res.status(500).json({
+      status: false,
+      message: "Delete Entry Failed, please try again later.",
+    });
   }
 };
 
@@ -164,12 +158,10 @@ exports.IdByBorrowerEntry = async (req, res) => {
     res.status(200).json({ status: true, DebtorInfo: exisitingBorrower });
   } catch (error) {
     console.log("error", error);
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "ID by Entry Failed, please try again later.",
-      });
+    res.status(500).json({
+      status: false,
+      message: "ID by Entry Failed, please try again later.",
+    });
   }
 };
 
@@ -182,7 +174,7 @@ exports.borrowerList = async (req, res) => {
     if (!pageSize) pageSize = 10;
     if (!sortOrder) sortOrder = {};
 
-    const userId=req.user.id
+    const userId = req.user.id;
     let sort_by;
     let sort_order;
     if (sortBy === "debtorName" && sortOrder === "asc") {
@@ -217,9 +209,12 @@ exports.borrowerList = async (req, res) => {
     let sortObject = {};
     sortObject[sort_by] = sort_order;
 
-    let searchobject = { userId:userId,type: type };
+    let searchobject = { userId: userId, type: type };
     searchobject = searchByDebtorName
-      ? { debtorName: {'$regex': `^${searchByDebtorName}$`, $options: 'i'}, type: type }
+      ? {
+          debtorName: { $regex: `^${searchByDebtorName}$`, $options: "i" },
+          type: type,
+        }
       : searchobject;
 
     const borrowers = await Borrower.find(searchobject)
@@ -229,11 +224,47 @@ exports.borrowerList = async (req, res) => {
     const count = await Borrower.countDocuments(searchobject);
     res.status(200).json({ status: true, Debtor: borrowers, total: count });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "Entry  List Failed, please try again later.",
-      });
+    res.status(500).json({
+      status: false,
+      message: "Entry  List Failed, please try again later.",
+    });
+  }
+};
+
+exports.borrowerPayment = async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const { paidAmount } = req.body;
+    const exisitingBorrower = await Borrower.findById(_id);
+    if (!exisitingBorrower)
+    return res
+    .status(400)
+        .json({ status: false, message: "Please Enter Valid id." });
+
+    if (!paidAmount) 
+      return res
+      .status(400)
+      .json({ status: false, message: "Paid Amount is Required" });
+
+      
+      console.log('paidAmount',paidAmount,exisitingBorrower.totalAmount)
+    let isInstallment;
+    if (exisitingBorrower.totalAmount == paidAmount) {
+      isInstallment = false;
+    } else {
+      isInstallment = true;
+    }
+    const paymentUpdate = {
+      paidAmount:paidAmount, isInstallment
+    }
+    await Borrower.findByIdAndUpdate(_id, paymentUpdate);
+     res
+      .status(200)
+      .json({ status: true, message: " Successfully Payment." });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: "Payment Failed, please try again later.",
+    });
   }
 };

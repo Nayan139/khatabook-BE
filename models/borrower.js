@@ -60,6 +60,14 @@ const borrowerSchema = new Schema({
         type: Boolean,
         default:false
     },
+    isInstallment: {
+        type: Boolean,
+        default:false
+    },
+    paidAmount: {
+        type: Number,
+        default:null
+    },
     type: {
         type:String
     }
