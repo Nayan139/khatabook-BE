@@ -252,11 +252,16 @@ exports.borrowerPayment = async (req, res) => {
         message: "Paid Amount should be less then total amount",
       });
     }
-    let isInstallment,isPaid=false;
-    const isRemaining=exisitingBorrower.totalAmount-exisitingBorrower.paidAmount
-    if (exisitingBorrower.totalAmount == paidAmount||isRemaining==paidAmount) {
+    let isInstallment,
+      isPaid = false;
+    const isRemaining =
+      exisitingBorrower.totalAmount - exisitingBorrower.paidAmount;
+    if (
+      exisitingBorrower.totalAmount == paidAmount ||
+      isRemaining == paidAmount
+    ) {
       isInstallment = false;
-      isPaid=true
+      isPaid = true;
     } else {
       isInstallment = true;
     }
@@ -273,6 +278,66 @@ exports.borrowerPayment = async (req, res) => {
     res.status(500).json({
       status: false,
       message: "Payment Failed, please try again later.",
+    });
+  }
+};
+
+exports.borrowerTotalPaid = async (req, res) => {
+  try {
+    let { type = "DEBT" } = req.query;
+
+    const TotalState = await Borrower.aggregate([
+      { $match: { type: type, userId: req.user.id } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$totalAmount" },
+          totalPaidAmount: { $sum: "$paidAmount" },
+          totalInterestAmount: { $sum: "$interestAmount" },
+          averageInterestRate: { $avg: "$interestRate" },
+          averageInterestAmount: { $avg: "$interestAmount" },
+          paid: {
+            $sum: {
+              $cond: ["$isPaid", 1, 0],
+            },
+          },
+          notPaid: {
+            $sum: {
+              $cond: ["$isPaid", 0, 1],
+            },
+          },
+        },
+      },
+    ]);
+    let state;
+    if (TotalState.length > 0) {
+      state = {
+        totalAmount: TotalState[0].totalAmount.toFixed(2),
+        totalPaidAmount: TotalState[0].totalPaidAmount.toFixed(2),
+        totalInterestAmount: TotalState[0].totalInterestAmount.toFixed(2),
+        totalDueAmount:
+          TotalState[0].totalAmount.toFixed(2) -
+          TotalState[0].totalPaidAmount.toFixed(2),
+        averageInterestRate: `${TotalState[0].averageInterestRate.toFixed(2)} %`,
+        averageInterestAmount: TotalState[0].averageInterestAmount.toFixed(2),
+        paid: TotalState[0].paid,
+        notPaid: TotalState[0].notPaid,
+      };
+    } else {
+      return res.status(400).json({
+        status: false,
+        message: "Something went to wrong.please try again.",
+      });
+    }
+    return res.status(400).json({
+      status: true,
+      message: "State is fetched successfully.",
+      state: state,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      message: "Something went to wrong.please try again.",
     });
   }
 };

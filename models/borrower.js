@@ -41,11 +41,11 @@ const borrowerSchema = new Schema({
         default:null
     },
     interestAmount: {
-        type: String,
+        type: Number,
         default:null
     },
     totalAmount: {
-        type: String,
+        type: Number,
         default:null
     },
     isWhatsapp: {
