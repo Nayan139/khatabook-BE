@@ -66,7 +66,7 @@ const borrowerSchema = new Schema({
     },
     paidAmount: {
         type: Number,
-        default:null
+        default:0
     },
     type: {
         type:String

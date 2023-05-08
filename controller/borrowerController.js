@@ -237,30 +237,38 @@ exports.borrowerPayment = async (req, res) => {
     const { paidAmount } = req.body;
     const exisitingBorrower = await Borrower.findById(_id);
     if (!exisitingBorrower)
-    return res
-    .status(400)
+      return res
+        .status(400)
         .json({ status: false, message: "Please Enter Valid id." });
 
-    if (!paidAmount) 
+    if (!paidAmount)
       return res
-      .status(400)
-      .json({ status: false, message: "Paid Amount is Required" });
+        .status(400)
+        .json({ status: false, message: "Paid Amount is Required" });
 
-      
-      console.log('paidAmount',paidAmount,exisitingBorrower.totalAmount)
-    let isInstallment;
-    if (exisitingBorrower.totalAmount == paidAmount) {
+    if (paidAmount > exisitingBorrower.totalAmount) {
+      return res.status(400).json({
+        status: false,
+        message: "Paid Amount should be less then total amount",
+      });
+    }
+    let isInstallment,isPaid=false;
+    const isRemaining=exisitingBorrower.totalAmount-exisitingBorrower.paidAmount
+    if (exisitingBorrower.totalAmount == paidAmount||isRemaining==paidAmount) {
       isInstallment = false;
+      isPaid=true
     } else {
       isInstallment = true;
     }
+
     const paymentUpdate = {
-      paidAmount:paidAmount, isInstallment
-    }
+      paidAmount: +exisitingBorrower.paidAmount + +paidAmount,
+      isInstallment,
+      isPaid,
+      // totalAmount: exisitingBorrower.totalAmount - paidAmount,
+    };
     await Borrower.findByIdAndUpdate(_id, paymentUpdate);
-     res
-      .status(200)
-      .json({ status: true, message: " Successfully Payment." });
+    res.status(200).json({ status: true, message: " Successfully Payment." });
   } catch (error) {
     res.status(500).json({
       status: false,
