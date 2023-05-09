@@ -318,7 +318,9 @@ exports.borrowerTotalPaid = async (req, res) => {
         totalDueAmount:
           TotalState[0].totalAmount.toFixed(2) -
           TotalState[0].totalPaidAmount.toFixed(2),
-        averageInterestRate: `${TotalState[0].averageInterestRate.toFixed(2)} %`,
+        averageInterestRate: `${TotalState[0].averageInterestRate.toFixed(
+          2
+        )} %`,
         averageInterestAmount: TotalState[0].averageInterestAmount.toFixed(2),
         paid: TotalState[0].paid,
         notPaid: TotalState[0].notPaid,
@@ -329,12 +331,69 @@ exports.borrowerTotalPaid = async (req, res) => {
         message: "Something went to wrong.please try again.",
       });
     }
-    return res.status(400).json({
+    return res.status(200).json({
       status: true,
       message: "State is fetched successfully.",
       state: state,
     });
   } catch (error) {
+    return res.status(400).json({
+      status: false,
+      message: "Something went to wrong.please try again.",
+    });
+  }
+};
+
+exports.chartState = async (req, res) => {
+  try {
+    let { start, end } = req.query;
+    if (!start || !end) {
+      return res.status(400).json({
+        status: false,
+        message: "Something went to wrong.please try again.",
+      });
+    }
+
+    const chartState = await Borrower.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: new Date(start), $lte: new Date(end) },
+          userId: req.user.id,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            type: "$type",
+          },
+          totalAmount: { $sum: "$totalAmount" },
+          averageAmount: { $avg: "$totalAmount" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.type",
+          type: {
+            $push: {
+              totalAmount: "$totalAmount",
+              averageAmount: "$averageAmount",
+              count: "$count",
+              date: "$_id.date",
+            },
+          },
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      status: true,
+      message: `Chart data are successfully fetched between ${start} to ${end}.`,
+      state: chartState,
+    });
+  } catch (error) {
+    console.log("error", error);
     return res.status(400).json({
       status: false,
       message: "Something went to wrong.please try again.",

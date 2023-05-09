@@ -1,6 +1,6 @@
 const express = require('express')
 const AuthMiddleware = require('../helper/AuthMiddleware')
-const { createBorrwerEntry, updateBorrowerEntry, deleteBorrowerEntry, IdByBorrowerEntry, borrowerList, borrowerPayment, borrowerTotalPaid } = require('../controller/borrowerController')
+const { createBorrwerEntry, updateBorrowerEntry, deleteBorrowerEntry, IdByBorrowerEntry, borrowerList, borrowerPayment, borrowerTotalPaid, chartState } = require('../controller/borrowerController')
 const router = express.Router()
 
 const api = process.env.API
@@ -17,6 +17,8 @@ router.get(`${api}/borrower/list`, AuthMiddleware, borrowerList)
 
 router.put(`${api}/borrower/paid/:id`, AuthMiddleware, borrowerPayment)
 
-router.get(`${api}/borrower/total/paid`,AuthMiddleware,borrowerTotalPaid)
+router.get(`${api}/total/paid`, AuthMiddleware, borrowerTotalPaid)
+
+router.get(`${api}/chart`,AuthMiddleware,chartState)
 
 module.exports=router
