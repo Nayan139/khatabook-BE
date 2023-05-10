@@ -309,34 +309,28 @@ exports.borrowerTotalPaid = async (req, res) => {
         },
       },
     ]);
-    let state;
-    if (TotalState.length > 0) {
-      state = {
-        totalAmount: TotalState[0].totalAmount.toFixed(2),
-        totalPaidAmount: TotalState[0].totalPaidAmount.toFixed(2),
-        totalInterestAmount: TotalState[0].totalInterestAmount.toFixed(2),
-        totalDueAmount:
-          TotalState[0].totalAmount.toFixed(2) -
-          TotalState[0].totalPaidAmount.toFixed(2),
-        averageInterestRate: `${TotalState[0].averageInterestRate.toFixed(
-          2
-        )} %`,
-        averageInterestAmount: TotalState[0].averageInterestAmount.toFixed(2),
-        paid: TotalState[0].paid,
-        notPaid: TotalState[0].notPaid,
-      };
-    } else {
-      return res.status(400).json({
-        status: false,
-        message: "Something went to wrong.please try again.",
-      });
-    }
+    const totalAmount = TotalState[0]?.totalAmount.toFixed(2) ?? 0;
+    const totalPaidAmount = TotalState[0]?.totalPaidAmount.toFixed(2) ?? 0;
+    let state = {
+      totalAmount: totalAmount,
+      totalPaidAmount: totalPaidAmount,
+      totalInterestAmount: TotalState[0]?.totalInterestAmount.toFixed(2) ?? 0,
+      totalDueAmount: totalAmount - totalPaidAmount,
+      averageInterestRate: `${
+        TotalState[0]?.averageInterestRate.toFixed(2) ?? 0
+      } %`,
+      averageInterestAmount:
+        TotalState[0]?.averageInterestAmount.toFixed(2) ?? 0,
+      paid: TotalState[0]?.paid ?? 0,
+      notPaid: TotalState[0]?.notPaid ?? 0,
+    };
     return res.status(200).json({
       status: true,
       message: "State is fetched successfully.",
       state: state,
     });
   } catch (error) {
+    console.log("error is here", error);
     return res.status(400).json({
       status: false,
       message: "Something went to wrong.please try again.",
