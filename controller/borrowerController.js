@@ -364,7 +364,8 @@ exports.chartState = async (req, res) => {
       {
         $group: {
           _id: {
-            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            date: "$createdAt",
             type: "$type",
           },
           totalAmount: { $sum: "$totalAmount" },
@@ -374,13 +375,14 @@ exports.chartState = async (req, res) => {
       },
       {
         $group: {
-          _id: "$_id.type",
+          _id: "$_id.id",
           type: {
             $push: {
+              type: "$_id.type",
               totalAmount: "$totalAmount",
               averageAmount: "$averageAmount",
               count: "$count",
-              date: "$_id.date",
+              date: "$_id.id",
             },
           },
         },
