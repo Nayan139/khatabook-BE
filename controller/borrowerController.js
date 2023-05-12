@@ -348,10 +348,10 @@ exports.chartState = async (req, res) => {
       });
     }
 
-    const chartState = await Borrower.aggregate([
+    const data = await Borrower.aggregate([
       {
         $match: {
-          createdAt: { $gte: new Date(start), $lte: new Date(end) },
+          createdAt: { $gte:  new Date(start), $lte: new Date(end)},
           userId: req.user.id,
         },
       },
@@ -359,29 +359,41 @@ exports.chartState = async (req, res) => {
         $group: {
           _id: {
             id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-            date: "$createdAt",
             type: "$type",
+            totalAmount: "$totalAmount",
+            averageAmount: "$totalAmount",
           },
-          totalAmount: { $sum: "$totalAmount" },
-          averageAmount: { $avg: "$totalAmount" },
-          count: { $sum: 1 },
         },
       },
       {
         $group: {
-          _id: "$_id.id",
-          type: {
+          _id: {
+            date: "$_id.id",
+            type: "$_id.type",
+          },
+          totalAmount: { $push: "$_id.totalAmount" },
+          entry: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id.date",
+          types: {
             $push: {
+              date: "$_id.date",
               type: "$_id.type",
-              totalAmount: "$totalAmount",
-              averageAmount: "$averageAmount",
-              count: "$count",
-              date: "$_id.id",
+              totalAmount: { $sum: "$totalAmount" },
+              averageAmount: { $avg: "$totalAmount" },
+              entry: "$entry",
             },
           },
         },
       },
+      { $project: { _id: 0, date: "$_id", types: "$types" } },
     ]);
+
+    // sort the data array based on the date in ascending order
+    const chartState = data.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     return res.status(200).json({
       status: true,
