@@ -19,12 +19,10 @@ exports.signup = async (req, res) => {
     try {
       isExisiting = await User.findOne({ $or: [{ email }, { mobileno }] });
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          status: false,
-          message: "Signing up failed, please try again later.",
-        });
+      return res.status(500).json({
+        status: false,
+        message: "Signing up failed, please try again later.",
+      });
     }
 
     if (isExisiting) {
@@ -42,12 +40,10 @@ exports.signup = async (req, res) => {
     try {
       hashedPassword = await bcrypt.hash(password, 12);
     } catch (err) {
-      return res
-        .status(500)
-        .json({
-          status: false,
-          message: "Could not create user, please try again.",
-        });
+      return res.status(500).json({
+        status: false,
+        message: "Could not create user, please try again.",
+      });
     }
 
     const createdUser = new User({
@@ -84,12 +80,10 @@ exports.signup = async (req, res) => {
       .json({ status: true, token: "Bearer " + token, userInfo: createdUser });
   } catch (error) {
     console.log("error-signup", error);
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "Signing up failed, please try again later.",
-      });
+    res.status(500).json({
+      status: false,
+      message: "Signing up failed, please try again later.",
+    });
   }
 };
 
@@ -162,7 +156,10 @@ exports.forgotPassword = async (req, res, next) => {
       //   422
       // );
       // next(error);
-      return  res.status(500).json({ success: false, message: "Forgot Password Failed, Please check your email address." });;
+      return res.status(500).json({
+        success: false,
+        message: "Forgot Password Failed, Please check your email address.",
+      });
     }
 
     const isValidatePassword = await bcrypt.compare(
@@ -174,18 +171,19 @@ exports.forgotPassword = async (req, res, next) => {
       //   "New Password should be different from previous password.",
       //   422
       // );
-      return  res.status(500).json({ success: false, message: "New Password should be different from previous password." });
+      return res.status(500).json({
+        success: false,
+        message: "New Password should be different from previous password.",
+      });
     }
     let hashedPassword;
     try {
       hashedPassword = await bcrypt.hash(password, 12);
     } catch (err) {
-      return res
-        .status(500)
-        .json({
-          status: false,
-          message: "Could not update password, please try again.",
-        });
+      return res.status(500).json({
+        status: false,
+        message: "Could not update password, please try again.",
+      });
     }
     const isUpdated = await User.findOneAndUpdate(email, {
       password: hashedPassword,
@@ -195,5 +193,37 @@ exports.forgotPassword = async (req, res, next) => {
     }
   } catch (error) {
     console.log("error", error);
+  }
+};
+
+exports.getProfile = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    if (userId) {
+      const user = await User.findById(userId).select(["-password", "-__v"]);
+      const firstname = user?.firstname ?? "";
+      const lastname = user?.lastname ?? "";
+      const fullName = `${firstname} ${lastname}`;
+      const userProfile = {
+        fullName: fullName,
+        ...user._doc,
+      };
+      return res.status(200).json({
+        status: true,
+        message: `User profile get successfully`,
+        user: userProfile,
+      });
+    } else {
+      return res.status(400).json({
+        status: false,
+        message: `Something went to wrong,please try again.`,
+      });
+    }
+  } catch (error) {
+    console.log("error -------------->", error);
+    return res.status(400).json({
+      status: false,
+      message: `Something went to wrong,please try again.`,
+    });
   }
 };

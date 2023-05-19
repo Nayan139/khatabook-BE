@@ -4,7 +4,9 @@ const {
   signup,
   signin,
   forgotPassword,
+  getProfile,
 } = require("../controller/authController");
+const AuthMiddleware = require("../helper/AuthMiddleware");
 const router = express.Router();
 
 const api = process.env.API;
@@ -51,5 +53,7 @@ router.post(`${api}/signup`, signup);
 router.post(`${api}/signin`, signin);
 
 router.put(`${api}/forgot-password`, forgotPassword);
+
+router.get(`${api}/profile/get`,AuthMiddleware, getProfile)
 
 module.exports = router;
